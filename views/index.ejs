@@ -16,11 +16,14 @@
 </body>
 </html>
 <script src="/ckeditor/ckeditor.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script>
     CKEDITOR.replace('txaContent',{
-        extraPlugins:'filebrowser',
-        filebrowserBrowseUrl:'/list',//upload location
+        extraPlugins:'imagebrowser',
+        imageBrowser_listUrl: '/files',
+        //filebrowserBrowseUrl:'/files',//upload location
         filebrowserUploadMethod:'form',
-        filebrowserUploadUrl:'/upload'//route
+        filebrowserUploadUrl:'http://10.0.0.47:3002/kong/media/api/v1/upload/image'//route
     })
 </script>

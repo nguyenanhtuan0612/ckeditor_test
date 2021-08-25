@@ -3,6 +3,7 @@ const app = express();
 const multipart = require('connect-multiparty');
 const multipartMiddleware = multipart();
 const fs = require('fs');
+const { callAPI } = require('./helper/services');
 
 
 app.set("view engine", "ejs"); //set view engine
@@ -14,28 +15,22 @@ app.get('/',(req,res)=>{
     res.render('index');
 });
 
-app.post('/upload',multipartMiddleware,(req,res)=>{
+app.get('/files', async function (req, res) {
+    const url = 'http://10.0.0.47:3002/kong/media/api/v1/asset/picture';
+    const { data } = await callAPI(url,'GET');
+    res.send(data)
+})
+
+app.post('/upload',multipartMiddleware,async (req,res)=>{
     try {
-        fs.readFile(req.files.upload.path, function (err, data) {
-            var newPath = __dirname + '/public/images/' + req.files.upload.name;
-            fs.writeFile(newPath, data, function (err) {
-                if (err) console.log({err: err});
-                else {
-                    console.log(req.files.upload.originalFilename);
-                //     imgl = '/images/req.files.upload.originalFilename';
-                //     let img = "<script>window.parent.CKEDITOR.tools.callFunction('','"+imgl+"','ok');</script>";
-                //    res.status(201).send(img);
-                 
-                    let fileName = req.files.upload.name;
-                    let url = '/images/'+fileName;                    
-                    let msg = 'Upload successfully';
-                    let funcNum = req.query.CKEditorFuncNum;
-                    console.log({url,msg,funcNum});
+        const url = 'http://10.0.0.47:3002/kong/media/api/v1/upload/image';
+        const { data } = await callAPI(url,'POST');
+        let uri = data.uri;                    
+        let msg = 'Upload successfully';
+        let funcNum = req.query.CKEditorFuncNum;
+        console.log({uri,msg,funcNum});
                    
-                    res.status(201).send("<script>window.parent.CKEDITOR.tools.callFunction('"+funcNum+"','"+url+"','"+msg+"');</script>");
-                }
-            });
-        });
+        res.status(201).send("<script>window.parent.CKEDITOR.tools.callFunction('"+funcNum+"','"+uri+"','"+msg+"');</script>");
        } catch (error) {
            console.log(error.message);
        }
